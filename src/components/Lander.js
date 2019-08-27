@@ -2,6 +2,8 @@ import React from 'react';
 import Emoji from 'react-native-emoji';
 import moment from 'moment';
 import FlightInfo from './FlightCard/FlightInfo.js';
+// import ApiService from './services/ApiService.js';
+var ApiService = require('../services/ApiService.js');
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
 export default class Lander extends React.Component {
@@ -12,6 +14,7 @@ export default class Lander extends React.Component {
 
     this.state = {
       isLoading: false,
+      initialState: true,
       trips: [{
         departureFlight: {
           arrivalDate: "2019-09-10",
@@ -39,15 +42,48 @@ export default class Lander extends React.Component {
   }
 
   componentDidMount() {
-    this.getNextThursAndSun()
+    if (this.state.initialState) {
+      // POST next thurs / sun
+      let tripDates = this.getNextThursAndSun();
+      // ApiService.GetTripsForDates(tripDates.thurs, tripDates.sun)
+      ApiService.GetTripsForDates()
+      .then((result) => {
+        console.log(result[0]);
+
+        this.setState({
+          isLoading: false,
+          trips: result,
+        }, function(){
+
+        });
+      })
+      .catch(e => console.log("error", e));
+
+      // return fetch(`http://localhost:3001/api/trips`)
+      //  .then((response) => response.json())
+      //  .then((response) => {
+      //    console.log(response[0]);
+      //
+      //    this.setState({
+      //      isLoading: false,
+      //      trips: response,
+      //    }, function(){
+      //
+      //    });
+      //  })
+      //  .catch(e => console.log("error", e));
+    }
   }
 
   getNextThursAndSun() {
-    let thurs = moment().day(11);
-    let sun = moment().day(7);
-    if(thurs.isAfter(sun)) {sun = moment().day(14)};
-    console.log(thurs);
-    console.log(sun);
+    let trip = {
+      thurs: moment().day(11),
+      sun: moment().day(7)
+    }
+    if(trip.thurs.isAfter(trip.sun)) {trip.sun = moment().day(14)};
+    console.log(trip.thurs);
+    console.log(trip.sun);
+    return trip;
   }
 
   render() {
@@ -82,6 +118,7 @@ export default class Lander extends React.Component {
                 departureCarrier={trip.departureFlight.carrier}
                 returnCarrier={trip.returnFlight.carrier}
                 price={trip.price}
+                bookLink={trip.bookLink}
               />
             </View>
           )
