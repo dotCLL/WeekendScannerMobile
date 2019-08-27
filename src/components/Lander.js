@@ -1,7 +1,7 @@
 import React from 'react';
 import Emoji from 'react-native-emoji';
 import moment from 'moment';
-import FlightInfo from './FlightInfo.js';
+import FlightInfo from './FlightCard/FlightInfo.js';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
 export default class Lander extends React.Component {
