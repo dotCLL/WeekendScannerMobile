@@ -11,7 +11,9 @@
     "moment": "^2.24.0",
     "react": "16.8.6",
     "react-native": "0.60.5",
-    "react-native-emoji": "^1.8.0"
+    "react-native-collapsible": "^1.5.1",
+    "react-native-emoji": "^1.8.0",
+    "react-native-material-dropdown": "^0.11.1"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",

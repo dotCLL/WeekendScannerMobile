@@ -2,19 +2,20 @@ import React from 'react';
 import Emoji from 'react-native-emoji';
 import moment from 'moment';
 import FlightInfo from './FlightCard/FlightInfo.js';
-// import ApiService from './services/ApiService.js';
+import DateBoard from './DateBoard/DateBoard.js';
+import { Dropdown } from 'react-native-material-dropdown';
 var ApiService = require('../services/ApiService.js');
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, SafeAreaView, ScrollView } from 'react-native';
 
 export default class Lander extends React.Component {
   constructor(props) {
     super(props);
 
     this.getNextThursAndSun.bind(this);
+    this.getXDateSets.bind(this);
 
     this.state = {
-      isLoading: false,
-      initialState: true,
+      isLoading: true,
       trips: [{
         departureFlight: {
           arrivalDate: "2019-09-10",
@@ -42,87 +43,117 @@ export default class Lander extends React.Component {
   }
 
   componentDidMount() {
-    if (this.state.initialState) {
-      // POST next thurs / sun
-      let tripDates = this.getNextThursAndSun();
-      // ApiService.GetTripsForDates(tripDates.thurs, tripDates.sun)
-      ApiService.GetTripsForDates()
-      .then((result) => {
-        console.log(result[0]);
+    // If initial call then do multiplier zero. else nothing.
 
-        this.setState({
-          isLoading: false,
-          trips: result,
-        }, function(){
 
-        });
-      })
-      .catch(e => console.log("error", e));
-
-      // return fetch(`http://localhost:3001/api/trips`)
-      //  .then((response) => response.json())
-      //  .then((response) => {
-      //    console.log(response[0]);
+      // // POST next thurs / sun
+      // let tripDates = this.getNextThursAndSun(this.state.weeksToSkipAhead);
+      // console.log(tripDates);
+      // // ApiService.GetTripsForDates(tripDates.thurs, tripDates.sun)
+      // ApiService.GetTripsForDates()
+      // .then((result) => {
+      //   console.log(result[0]);
       //
-      //    this.setState({
-      //      isLoading: false,
-      //      trips: response,
-      //    }, function(){
+      //   this.setState({
+      //     isLoading: false,
+      //     trips: result,
+      //   }, function(){
       //
-      //    });
-      //  })
-      //  .catch(e => console.log("error", e));
-    }
+      //   });
+      // })
+      // .catch(e => console.log("error", e));
   }
 
-  getNextThursAndSun() {
+  getNextThursAndSun(weeksToSkipAhead = 0) {
     let trip = {
-      thurs: moment().day(11),
-      sun: moment().day(7)
+      thurs: moment().day(11 + (7 * weeksToSkipAhead)),
+      sun: moment().day(7 + (7 * weeksToSkipAhead))
     }
-    if(trip.thurs.isAfter(trip.sun)) {trip.sun = moment().day(14)};
-    console.log(trip.thurs);
-    console.log(trip.sun);
+    if(trip.thurs.isAfter(trip.sun)) {trip.sun = moment().day(14 + (7 * weeksToSkipAhead))};
     return trip;
+  }
+
+  getXDateSets(x) {
+    let allDates = [];
+    for (var i = 0; i < x; i++) {
+      let dates = this.getNextThursAndSun(i);
+      allDates.push({value: `${dates.thurs.format("Do MMM")} to ${dates.sun.format("Do MMM")}`})
+    }
+    return allDates;
+  }
+
+  getTrips(departDate, returnDate) {
+    // ApiService.GetTripsForDates(tripDates.thurs, tripDates.sun)
+    ApiService.GetTripsForDates()
+    .then((result) => {
+      console.log(result[0]);
+
+      this.setState({
+        isLoading: false,
+        trips: result,
+      }, function(){
+
+      });
+    })
+    .catch(e => console.log("error", e));
   }
 
   render() {
     if(this.state.isLoading){
       return(
-        <View>
-          <View style={styles.sectionContainer}>
-            <Text>{moment(this.state.trips[0].departureFlight.departureDate).format("Do MMM")} -- {moment(this.state.trips[0].returnFlight.arrivalDate).format("Do MMM")}</Text>
+          <View style={styles.Lander}>
+            <View style={{ width: '90%' }}>
+              <Dropdown
+                label='Trip dates.'
+                data={this.getXDateSets(10)}
+                itemTextStyle={styles.text}
+                itemCount={3}
+                textColor="#54708B"
+                baseColor="#54708B"
+                onChangeText={(value, index, data) => this.getTrips("test","test")}
+              />
+            </View>
+            {/* <View style={{flex: 1, padding: 20}}>
+              <ActivityIndicator/>
+            </View> */}
           </View>
-          <View style={{flex: 1, padding: 20}}>
-            <ActivityIndicator/>
-          </View>
-        </View>
       )
     }
 
     return (
-      <View
-        style={styles.Lander}
-      >
-        <View style={styles.sectionContainer}>
-          <Text>{moment(this.state.trips[0].departureFlight.departureDate).format("Do MMM")} -- {moment(this.state.trips[0].returnFlight.arrivalDate).format("Do MMM")}</Text>
+      <View style={styles.Lander}>
+        <View style={{ width: '90%', marginTop: 25 }}>
+          <Dropdown
+            label='Trip dates.'
+            data={this.getXDateSets(10)}
+            itemTextStyle={styles.text}
+            itemCount={3}
+            textColor="#54708B"
+            baseColor="#54708B"
+            onChangeText={(value, index, data) => this.getTrips("test","test")}
+          />
         </View>
-        {this.state.trips.map((trip, ind) => {
-          return (
-            <View style={styles.sectionContainer} key={ind}>
-              <FlightInfo
-                departureFlightDepartureTime={trip.departureFlight.departureTime}
-                departureFlightArrivalTime={trip.departureFlight.arrivalTime}
-                returnFlightDepartureTime={trip.returnFlight.departureTime}
-                returnFlightArrivalTime={trip.returnFlight.arrivalTime}
-                departureCarrier={trip.departureFlight.carrier}
-                returnCarrier={trip.returnFlight.carrier}
-                price={trip.price}
-                bookLink={trip.bookLink}
-              />
-            </View>
-          )
-        })}
+          <ScrollView
+            contentContainerStyle={styles.containerContent}
+            style={styles.scrollView}>
+            {this.state.trips.map((trip, ind) => {
+              return (
+                <View style={styles.sectionContainer} key={ind}>
+                  <FlightInfo
+                    departureFlightDepartureTime={trip.departureFlight.departureTime}
+                    departureFlightArrivalTime={trip.departureFlight.arrivalTime}
+                    returnFlightDepartureTime={trip.returnFlight.departureTime}
+                    returnFlightArrivalTime={trip.returnFlight.arrivalTime}
+                    departureCarrier={trip.departureFlight.carrier}
+                    returnCarrier={trip.returnFlight.carrier}
+                    price={trip.price}
+                    bookLink={trip.bookLink}
+                  />
+                </View>
+              )
+            })}
+          </ScrollView>
+
       </View>
     )
   }
@@ -130,16 +161,17 @@ export default class Lander extends React.Component {
 
 const styles = StyleSheet.create({
   Lander: {
-    backgroundColor: '#e2e9f2',
+    backgroundColor: 'white',
     flex: 1,
     height: '100%',
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 10
   },
   sectionContainer: {
     marginTop: 32,
-    paddingHorizontal: 24,
+    width: '90%'
   },
   sectionTitle: {
     fontSize: 24,
@@ -155,4 +187,14 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
+  text: {
+    color: 'white',
+    fontSize: 6,
+    fontWeight: '600',
+  },
+  containerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 30
+  }
 })

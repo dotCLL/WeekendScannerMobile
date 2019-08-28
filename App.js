@@ -30,24 +30,21 @@ import Lander from './src/components/Lander.js';
 
 const App = () => {
   return (
-    <View>
+    <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={{backgroundColor: "#e2e9f2"}}>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Lander/>
-        </ScrollView>
-      </SafeAreaView>
+      <Lander/>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: "#e2e9f2",
-    height: '100%'
-  },
+  container: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 });
 
 export default App;
