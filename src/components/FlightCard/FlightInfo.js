@@ -7,7 +7,6 @@ import { View, Text, StyleSheet, Image, Button, Dimensions } from 'react-native'
 export default class FlightInfo extends React.Component {
   constructor(props) {
     super(props);
-
   }
 
   render() {
@@ -32,8 +31,9 @@ export default class FlightInfo extends React.Component {
           </View>
         </View>
         <BookButton
-          url={this.props.bookLink}
+          uri={this.props.bookLink}
           price={this.props.price}
+          navigation={this.props.navigation}
         />
       </View>
     )

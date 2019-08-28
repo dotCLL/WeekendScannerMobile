@@ -15,36 +15,15 @@ import {
   Text,
   StatusBar,
 } from 'react-native';
-import Lander from './src/components/Lander.js';
+import Lander from './src/screens/Lander.js';
+import ShowWebView from './src/screens/ShowWebView.js';
+import {createStackNavigator, createAppContainer} from 'react-navigation';
 
-// <View style={styles.body}>
-//   <View style={styles.sectionContainer}>
-//     <Text style={styles.sectionTitle}>{res}</Text>
-//     <Text style={styles.sectionDescription}>
-//       Edit <Text style={styles.highlight}>App.js</Text> to change this
-//       screen and then come back to see your edits.
-//
-//     </Text>
-//   </View>
-// </View>
-
-const App = () => {
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      <Lander/>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+const MainNavigator = createStackNavigator({
+  Home: {screen: Lander},
+  Web: {screen: ShowWebView},
 });
+
+const App = createAppContainer(MainNavigator);
 
 export default App;

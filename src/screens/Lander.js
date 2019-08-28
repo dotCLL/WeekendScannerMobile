@@ -1,13 +1,17 @@
 import React from 'react';
 import Emoji from 'react-native-emoji';
 import moment from 'moment';
-import FlightInfo from './FlightCard/FlightInfo.js';
-import DateBoard from './DateBoard/DateBoard.js';
+import FlightInfo from '../components/FlightCard/FlightInfo.js';
+import DateBoard from '../components/DateBoard/DateBoard.js';
 import { Dropdown } from 'react-native-material-dropdown';
 var ApiService = require('../services/ApiService.js');
 import { View, Text, StyleSheet, ActivityIndicator, SafeAreaView, ScrollView } from 'react-native';
 
 export default class Lander extends React.Component {
+  static navigationOptions = {
+    header: null
+  }
+
   constructor(props) {
     super(props);
 
@@ -40,28 +44,6 @@ export default class Lander extends React.Component {
         }
       }]
     }
-  }
-
-  componentDidMount() {
-    // If initial call then do multiplier zero. else nothing.
-
-
-      // // POST next thurs / sun
-      // let tripDates = this.getNextThursAndSun(this.state.weeksToSkipAhead);
-      // console.log(tripDates);
-      // // ApiService.GetTripsForDates(tripDates.thurs, tripDates.sun)
-      // ApiService.GetTripsForDates()
-      // .then((result) => {
-      //   console.log(result[0]);
-      //
-      //   this.setState({
-      //     isLoading: false,
-      //     trips: result,
-      //   }, function(){
-      //
-      //   });
-      // })
-      // .catch(e => console.log("error", e));
   }
 
   getNextThursAndSun(weeksToSkipAhead = 0) {
@@ -147,13 +129,13 @@ export default class Lander extends React.Component {
                     departureCarrier={trip.departureFlight.carrier}
                     returnCarrier={trip.returnFlight.carrier}
                     price={trip.price}
-                    bookLink={trip.bookLink}
+                    bookLink={trip.bookingLink}
+                    navigation={this.props.navigation}
                   />
                 </View>
               )
             })}
           </ScrollView>
-
       </View>
     )
   }
@@ -167,7 +149,6 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 10
   },
   sectionContainer: {
     marginTop: 32,

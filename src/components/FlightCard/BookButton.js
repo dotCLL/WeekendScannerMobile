@@ -4,14 +4,13 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 export default class BookButton extends React.Component {
   constructor(props) {
     super(props);
-
   }
 
   render() {
     return (
       <TouchableOpacity
         style={styles.BookButton}
-        onPress={() => console.log(`Trigger Webview: ${this.props.url}`)}
+        onPress={() => this.props.navigation.navigate('Web', {uri: this.props.uri})}
       >
         <View style={styles.priceContainer}>
           <Text style={styles.bigText}>{"$"}</Text>
