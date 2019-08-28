@@ -59,14 +59,19 @@ export default class Lander extends React.Component {
     let allDates = [];
     for (var i = 0; i < x; i++) {
       let dates = this.getNextThursAndSun(i);
-      allDates.push({value: `${dates.thurs.format("Do MMM")} to ${dates.sun.format("Do MMM")}`})
+      allDates.push({
+        value: `${dates.thurs.format("Do MMM")} to ${dates.sun.format("Do MMM")}`,
+        raw: {
+          departure: dates.thurs.format("YYYY-MM-DD"),
+          return: dates.sun.format("YYYY-MM-DD")
+        }
+      })
     }
     return allDates;
   }
 
   getTrips(departDate, returnDate) {
-    // ApiService.GetTripsForDates(tripDates.thurs, tripDates.sun)
-    ApiService.GetTripsForDates()
+    ApiService.GetTripsForDates(departDate, returnDate)
     .then((result) => {
       console.log(result[0]);
 
@@ -92,7 +97,7 @@ export default class Lander extends React.Component {
                 itemCount={3}
                 textColor="#54708B"
                 baseColor="#54708B"
-                onChangeText={(value, index, data) => this.getTrips("test","test")}
+                onChangeText={(value, index, data) => this.getTrips(data[index].raw.departure,data[index].raw.return)}
               />
             </View>
             {/* <View style={{flex: 1, padding: 20}}>
@@ -112,7 +117,7 @@ export default class Lander extends React.Component {
             itemCount={3}
             textColor="#54708B"
             baseColor="#54708B"
-            onChangeText={(value, index, data) => this.getTrips("test","test")}
+            onChangeText={(value, index, data) => this.getTrips(data[index].raw.departure,data[index].raw.return)}
           />
         </View>
           <ScrollView
